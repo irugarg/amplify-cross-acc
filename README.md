@@ -32,7 +32,7 @@ Until the moment, Amplify does not support natively cross-account as we can see 
 
 ### Solution
 
-Create a custom CI/CD through Codepipeline using CDK.
+Create a custom CI/CD through Codepipeline using CDK as IaC.
 
 It uses two **different** accounts simulating two AWS accounts: developer and production.
 - Developer AWS Account is related to dev/test branches.
