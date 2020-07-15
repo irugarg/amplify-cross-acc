@@ -3,7 +3,6 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipelineactions from '@aws-cdk/aws-codepipeline-actions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as iam from '@aws-cdk/aws-iam';
-import * as ssm from '@aws-cdk/aws-ssm';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import { RemovalPolicy } from '@aws-cdk/core';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -159,7 +158,7 @@ export class CICDProdStack extends cdk.Stack {
     // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'OutputId', {
       value: cloudfrontT.domainName,
-      exportName: 'CloudFront Endpoint:',
+      exportName: 'CFEndpoint:',
     });
   }
 }

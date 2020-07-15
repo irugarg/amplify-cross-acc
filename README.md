@@ -5,17 +5,24 @@ This project was generated with:
  - [Amplify CLI](https://github.com/aws-amplify/amplify-cli) version 4.21.3.
  - [CDK](https://github.com/aws/aws-cdk) version 1.47.1.
 
-The frontend is using React with amplify react UI for Authentication.
+
+![Diagram](img/diagram.png)
+
+The frontend is leveraging React with Amplify UI Theme for Authentication.
 - It has unit test, integration test and UI test.
 
-The backend is using Amplify with the following services:
+The backend is leveraging Amplify with the following services:
 - S3 as Storage.
 - Cognito for authentication.
-- S3 for hosting React Application.
 - AppSync/GraphQL.
 
 The CI/CD process is created through CDK using:
-- Github as Source, Codebuild, Codepipeline, S3 and CloudFront.
+- Github as Source
+- Codebuild
+- CodeDeploy
+- Codepipeline
+- S3
+- CloudFront pointing to S3.
 
 ## Story Case
 

@@ -938,7 +938,7 @@
         ]
       },
       "Export": {
-        "Name": "CloudFront Endpoint:"
+        "Name": "CFEndpoint:"
       }
     }
   }
