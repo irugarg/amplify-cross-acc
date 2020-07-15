@@ -40,6 +40,8 @@ It uses two **different** accounts simulating two AWS accounts: developer and pr
    - Install [AWS CLI V2](https://docs.aws.amazon.com/pt_br/cli/latest/userguide/cli-chap-install.html).
    - Install [AWS CDK](https://github.com/aws/aws-cdk)
 
+To follow this tutorial, you’ll need a GitHub account and have created a GitHub repository to hold the source code.  When you see OWNER or REPO in this README, replace that with the owner and name of your forked GitHub repo.
+
 2. Fork this project for testing CI/CD.
 3. Clone the forked repository to your local.
 
@@ -143,6 +145,8 @@ When done, verify if exists a file in **/amplify/team-provider.info.json**.
   ```
 ![CdkConfig](img/cdkEnv.png)
 
+To have AWS CodePipeline read from this GitHub repo, you also need to have a GitHub personal access token stored as a plaintext secret (not a JSON secret) in AWS Secrets Manager under the name GitHubToken. For instructions, see Tutorial: Creating and Retrieving a Secret.
+
 1. Run the command below using your **GitHub Token**
    1. To get your GitHub Token, follow the instructions [here](https://docs.aws.amazon.com/codepipeline/latest/userguide/GitHub-authentication.html).
    ```
@@ -179,8 +183,11 @@ aws secretsmanager create-secret \
 
 **Deploying with CDK**
 
-1. Run `npm install` inside cdk folder.
+1. Run `npm install` inside cdk folder to install all cdk depedencies.
+
 2. If, first time using CDK, run `cd cdk && cdk bootstrap`
+  - The account you want to deploy have to be bootstrapped first, which means some minimal infrastructure is provisioned into the account so that the CDK can access it. You also have to add a trust relationship to the account that contains the pipeline.
+
 
 For CI/CD for development/test environment in cdk folder:
   1. Run `cdk deploy CICDDevStack --profile amplify-for-dev-test`
