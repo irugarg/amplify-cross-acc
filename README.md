@@ -103,7 +103,7 @@ Under the hood, the script will execute the commands below:
 Create amplify environment: **prod**
 
 1. Run `npm install` to install all the packages needed.
-2. Run `npm run push:dev`, it will execute a script for pushing all the amplify services using **amplify-for-prod** AWS Profile with **prod** environment.
+2. Run `npm run push:prod`, it will execute a script for pushing all the amplify services using **amplify-for-prod** AWS Profile with **prod** environment.
 
 Under the hood, the script will execute the commands below:
 
