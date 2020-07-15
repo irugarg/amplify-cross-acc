@@ -2,8 +2,8 @@
 import { API, graphqlOperation, Auth, Storage } from 'aws-amplify';
 import { IUser } from '../hooks/AuthContext';
 import { updateUser } from '../graphql/mutations';
-import { listPostsSortedByTimestamp, getUser } from '../graphql/queries';
-import { ListPostsSortedByTimestampQuery, GetUserQuery } from '../API';
+import { getUser } from '../graphql/queries';
+import { GetUserQuery } from '../API';
 
 const EMPTY_USER = { items: [], nextToken: '' };
 

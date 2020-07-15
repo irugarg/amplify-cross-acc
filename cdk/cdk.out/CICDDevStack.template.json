@@ -371,7 +371,7 @@
                 },
                 "Configuration": {
                   "Owner": "shigueojp",
-                  "Repo": "cdk-amplify-react",
+                  "Repo": "amplify-cross-acc",
                   "Branch": "dev",
                   "OAuthToken": "{{resolve:secretsmanager:GitHubToken:SecretString:GitHubToken::}}",
                   "PollForSourceChanges": false
