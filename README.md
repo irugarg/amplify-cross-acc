@@ -148,10 +148,21 @@ When done, verify if exists a file in **/amplify/team-provider.info.json**.
    ```
     aws secretsmanager create-secret \
     --name GitHubToken \
-    --secret-string <YourGitHubTokenID> \
+    --secret-string '{"GitHubToken":"<YourGitHubTokenID>"}' \
     --region us-east-1 --profile amplify-for-dev-test
     ```
-2. Configure your Access-Key and Secret-Key for dev/test environment.
+
+2. Do the same step for production environment.
+```
+aws secretsmanager create-secret \
+    --name GitHubToken \
+    --secret-string '{"GitHubToken":"<YourGitHubTokenID>"}' \
+    --region us-east-1 --profile amplify-for-prod
+```
+
+---
+
+1. Configure your Access-Key and Secret-Key for dev/test environment.
    ```
    aws ssm put-parameter --name "access-key-amplify-dev-test" --type "SecureString" --value <YourAccessKey> --profile amplify-for-dev-test
    aws ssm put-parameter --name "secret-key-amplify-dev-test" --type "SecureString" --value <YourSecretKey> --profile amplify-for-dev-test
@@ -160,7 +171,7 @@ When done, verify if exists a file in **/amplify/team-provider.info.json**.
 
    ![SSMPutParamater](img/ssm_put_parameter.png)
 
-3. Do the same as step 2 for prod environment.
+2. Do the same as step 3 for prod environment.
    ```
    aws ssm put-parameter --name "access-key-amplify-prod" --type "SecureString" --value <YourAccessKey> --profile amplify-for-prod
    aws ssm put-parameter --name "secret-key-amplify-prod" --type "SecureString" --value <YourSecretKey> --profile amplify-for-prod
