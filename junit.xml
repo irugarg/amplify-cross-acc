@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="4" failures="0" time="5.889">
+  <testsuite name="Dashboard Page" errors="0" failures="0" skipped="0" timestamp="2020-07-07T03:21:07" time="1.621" tests="1">
+    <testcase classname="Dashboard Page should be able to see dashboard" name="Dashboard Page should be able to see dashboard" time="0.018">
+    </testcase>
+  </testsuite>
+  <testsuite name="Input component" errors="0" failures="0" skipped="0" timestamp="2020-07-07T03:21:07" time="2.19" tests="2">
+    <testcase classname="Input component Should be able to render input" name="Input component Should be able to render input" time="0.045">
+    </testcase>
+    <testcase classname="Input component should render highlight on input focus" name="Input component should render highlight on input focus" time="0.059">
+    </testcase>
+  </testsuite>
+  <testsuite name="Profile Page" errors="0" failures="0" skipped="0" timestamp="2020-07-07T03:21:07" time="4.293" tests="1">
+    <testcase classname="Profile Page should display an error if password != confirmpassword" name="Profile Page should display an error if password != confirmpassword" time="0.067">
+    </testcase>
+  </testsuite>
+</testsuites>

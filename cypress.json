@@ -1,0 +1,9 @@
+{
+  "baseUrl": "http://localhost:3000/",
+  "experimentalComponentTesting": true,
+  "experimentalShadowDomSupport": true,
+  "reporter": "junit",
+  "reporterOptions": {
+    "mochaFile": "results/my-test-output-[hash].xml"
+  }
+}

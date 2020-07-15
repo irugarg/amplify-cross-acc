@@ -1,0 +1,2076 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree"
+      },
+      "ProdAccStack": {
+        "id": "ProdAccStack",
+        "path": "ProdAccStack",
+        "children": {
+          "CrossAccRole": {
+            "id": "CrossAccRole",
+            "path": "ProdAccStack/CrossAccRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ProdAccStack/CrossAccRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::727044573396:root"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "description": "Role for codebuild from Dev Account have the right permissions",
+                    "roleName": "CrossAccountRole"
+                  }
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "ProdAccStack/CrossAccRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "ProdAccStack/CrossAccRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "*",
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "CrossAccRoleDefaultPolicy8E65B069",
+                        "roles": [
+                          {
+                            "Ref": "CrossAccRole314E9A72"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "bucketHosting": {
+            "id": "bucketHosting",
+            "path": "ProdAccStack/bucketHosting",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ProdAccStack/bucketHosting/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "websiteConfiguration": {
+                      "indexDocument": "index.html",
+                      "errorDocument": "index.html"
+                    }
+                  }
+                }
+              },
+              "Notifications": {
+                "id": "Notifications",
+                "path": "ProdAccStack/bucketHosting/Notifications"
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "ProdAccStack/bucketHosting/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "ProdAccStack/bucketHosting/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "bucketHostingCD2AAEE9"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:GetObject*",
+                                "s3:GetBucket*",
+                                "s3:List*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "CanonicalUser": {
+                                  "Fn::GetAtt": [
+                                    "OAIE1EFC67F",
+                                    "S3CanonicalUserId"
+                                  ]
+                                }
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "bucketHostingCD2AAEE9",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "bucketHostingCD2AAEE9",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "OAI": {
+            "id": "OAI",
+            "path": "ProdAccStack/OAI",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ProdAccStack/OAI/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+                  "aws:cdk:cloudformation:props": {
+                    "cloudFrontOriginAccessIdentityConfig": {
+                      "comment": "Allows CloudFront to reach the bucket"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "Parameter": {
+            "id": "Parameter",
+            "path": "ProdAccStack/Parameter",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ProdAccStack/Parameter/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "String",
+                    "value": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "s3://",
+                          {
+                            "Ref": "bucketHostingCD2AAEE9"
+                          }
+                        ]
+                      ]
+                    },
+                    "description": "Description for your parameter",
+                    "name": "bucketNameProd"
+                  }
+                }
+              }
+            }
+          },
+          "CloudFront": {
+            "id": "CloudFront",
+            "path": "ProdAccStack/CloudFront",
+            "children": {
+              "CFDistribution": {
+                "id": "CFDistribution",
+                "path": "ProdAccStack/CloudFront/CFDistribution",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "defaultRootObject": "index.html",
+                      "httpVersion": "http2",
+                      "priceClass": "PriceClass_100",
+                      "ipv6Enabled": true,
+                      "customErrorResponses": [
+                        {
+                          "errorCode": 404,
+                          "responseCode": 200,
+                          "responsePagePath": "/index.html"
+                        }
+                      ],
+                      "origins": [
+                        {
+                          "id": "origin1",
+                          "domainName": {
+                            "Fn::GetAtt": [
+                              "bucketHostingCD2AAEE9",
+                              "RegionalDomainName"
+                            ]
+                          },
+                          "s3OriginConfig": {
+                            "originAccessIdentity": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "origin-access-identity/cloudfront/",
+                                  {
+                                    "Ref": "OAIE1EFC67F"
+                                  }
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "allowedMethods": [
+                          "GET",
+                          "HEAD"
+                        ],
+                        "cachedMethods": [
+                          "GET",
+                          "HEAD"
+                        ],
+                        "compress": true,
+                        "forwardedValues": {
+                          "queryString": false,
+                          "cookies": {
+                            "forward": "none"
+                          }
+                        },
+                        "targetOriginId": "origin1",
+                        "viewerProtocolPolicy": "redirect-to-https"
+                      },
+                      "viewerCertificate": {
+                        "cloudFrontDefaultCertificate": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "OutputId": {
+            "id": "OutputId",
+            "path": "ProdAccStack/OutputId"
+          }
+        }
+      },
+      "CICDDevStack": {
+        "id": "CICDDevStack",
+        "path": "CICDDevStack",
+        "children": {
+          "bucketReactAoD": {
+            "id": "bucketReactAoD",
+            "path": "CICDDevStack/bucketReactAoD",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CICDDevStack/bucketReactAoD/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "websiteConfiguration": {
+                      "indexDocument": "index.html",
+                      "errorDocument": "index.html"
+                    }
+                  }
+                }
+              },
+              "Notifications": {
+                "id": "Notifications",
+                "path": "CICDDevStack/bucketReactAoD/Notifications"
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "CICDDevStack/bucketReactAoD/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CICDDevStack/bucketReactAoD/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "bucketReactAoD390EA36A"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:GetObject*",
+                                "s3:GetBucket*",
+                                "s3:List*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "CanonicalUser": {
+                                  "Fn::GetAtt": [
+                                    "OAIE1EFC67F",
+                                    "S3CanonicalUserId"
+                                  ]
+                                }
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "bucketReactAoD390EA36A",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "bucketReactAoD390EA36A",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "pipelineDevAoD": {
+            "id": "pipelineDevAoD",
+            "path": "CICDDevStack/pipelineDevAoD",
+            "children": {
+              "ArtifactsBucketEncryptionKey": {
+                "id": "ArtifactsBucketEncryptionKey",
+                "path": "CICDDevStack/pipelineDevAoD/ArtifactsBucketEncryptionKey",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CICDDevStack/pipelineDevAoD/ArtifactsBucketEncryptionKey/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                      "aws:cdk:cloudformation:props": {
+                        "keyPolicy": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "kms:Create*",
+                                "kms:Describe*",
+                                "kms:Enable*",
+                                "kms:List*",
+                                "kms:Put*",
+                                "kms:Update*",
+                                "kms:Revoke*",
+                                "kms:Disable*",
+                                "kms:Get*",
+                                "kms:Delete*",
+                                "kms:ScheduleKeyDeletion",
+                                "kms:CancelKeyDeletion",
+                                "kms:GenerateDataKey",
+                                "kms:TagResource",
+                                "kms:UntagResource"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":root"
+                                    ]
+                                  ]
+                                }
+                              },
+                              "Resource": "*"
+                            },
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:DescribeKey",
+                                "kms:Encrypt",
+                                "kms:ReEncrypt*",
+                                "kms:GenerateDataKey*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "pipelineDevAoDRole3706E443",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": "*"
+                            },
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:DescribeKey",
+                                "kms:Encrypt",
+                                "kms:ReEncrypt*",
+                                "kms:GenerateDataKey*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "codeBuildRole2DDEF965",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": "*"
+                            },
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:Encrypt",
+                                "kms:ReEncrypt*",
+                                "kms:GenerateDataKey*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "codeBuildRole2DDEF965",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": "*"
+                            },
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:DescribeKey"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "pipelineDevAoDDeployDeployDevAodCodePipelineActionRoleC524E4C6",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "ArtifactsBucket": {
+                "id": "ArtifactsBucket",
+                "path": "CICDDevStack/pipelineDevAoD/ArtifactsBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CICDDevStack/pipelineDevAoD/ArtifactsBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {
+                        "bucketEncryption": {
+                          "serverSideEncryptionConfiguration": [
+                            {
+                              "serverSideEncryptionByDefault": {
+                                "sseAlgorithm": "aws:kms",
+                                "kmsMasterKeyId": {
+                                  "Fn::GetAtt": [
+                                    "pipelineDevAoDArtifactsBucketEncryptionKey5CD9DB6C",
+                                    "Arn"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "publicAccessBlockConfiguration": {
+                          "blockPublicAcls": true,
+                          "blockPublicPolicy": true,
+                          "ignorePublicAcls": true,
+                          "restrictPublicBuckets": true
+                        }
+                      }
+                    }
+                  },
+                  "Notifications": {
+                    "id": "Notifications",
+                    "path": "CICDDevStack/pipelineDevAoD/ArtifactsBucket/Notifications"
+                  }
+                }
+              },
+              "ArtifactsBucketEncryptionKeyAlias": {
+                "id": "ArtifactsBucketEncryptionKeyAlias",
+                "path": "CICDDevStack/pipelineDevAoD/ArtifactsBucketEncryptionKeyAlias",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CICDDevStack/pipelineDevAoD/ArtifactsBucketEncryptionKeyAlias/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
+                      "aws:cdk:cloudformation:props": {
+                        "aliasName": "alias/codepipeline-cicddevstackpipelinedevaodf8aa7567",
+                        "targetKeyId": {
+                          "Fn::GetAtt": [
+                            "pipelineDevAoDArtifactsBucketEncryptionKey5CD9DB6C",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "CICDDevStack/pipelineDevAoD/Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CICDDevStack/pipelineDevAoD/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "codepipeline.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "CICDDevStack/pipelineDevAoD/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CICDDevStack/pipelineDevAoD/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:GetObject*",
+                                    "s3:GetBucket*",
+                                    "s3:List*",
+                                    "s3:DeleteObject*",
+                                    "s3:PutObject*",
+                                    "s3:Abort*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "pipelineDevAoDArtifactsBucket9239F337",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "pipelineDevAoDArtifactsBucket9239F337",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
+                                    "kms:Decrypt",
+                                    "kms:DescribeKey",
+                                    "kms:Encrypt",
+                                    "kms:ReEncrypt*",
+                                    "kms:GenerateDataKey*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "pipelineDevAoDArtifactsBucketEncryptionKey5CD9DB6C",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "pipelineDevAoDBuildBuildDevAodCodePipelineActionRole8A839192",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "pipelineDevAoDDeployDeployDevAodCodePipelineActionRoleC524E4C6",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "pipelineDevAoDRoleDefaultPolicy390684F5",
+                            "roles": [
+                              {
+                                "Ref": "pipelineDevAoDRole3706E443"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CICDDevStack/pipelineDevAoD/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodePipeline::Pipeline",
+                  "aws:cdk:cloudformation:props": {
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "pipelineDevAoDRole3706E443",
+                        "Arn"
+                      ]
+                    },
+                    "stages": [
+                      {
+                        "name": "Source",
+                        "actions": [
+                          {
+                            "name": "SourceDevAod",
+                            "outputArtifacts": [
+                              {
+                                "name": "Artifact_Source_SourceDevAod"
+                              }
+                            ],
+                            "actionTypeId": {
+                              "category": "Source",
+                              "version": "1",
+                              "owner": "ThirdParty",
+                              "provider": "GitHub"
+                            },
+                            "configuration": {
+                              "Owner": "shigueojp",
+                              "Repo": "cdk-amplify-react",
+                              "Branch": "dev",
+                              "OAuthToken": "{{resolve:secretsmanager:GitHubToken:SecretString:GitHubToken::}}",
+                              "PollForSourceChanges": false
+                            },
+                            "runOrder": 1
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Build",
+                        "actions": [
+                          {
+                            "name": "BuildDevAod",
+                            "inputArtifacts": [
+                              {
+                                "name": "Artifact_Source_SourceDevAod"
+                              }
+                            ],
+                            "outputArtifacts": [
+                              {
+                                "name": "Artifact_Build_BuildDevAod"
+                              }
+                            ],
+                            "actionTypeId": {
+                              "category": "Build",
+                              "version": "1",
+                              "owner": "AWS",
+                              "provider": "CodeBuild"
+                            },
+                            "configuration": {
+                              "ProjectName": {
+                                "Ref": "codeBuildDevAoD7086ECB4"
+                              },
+                              "EnvironmentVariables": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "[{\"name\":\"S3_BUCKET\",\"type\":\"PLAINTEXT\",\"value\":\"s3://",
+                                    {
+                                      "Ref": "bucketReactAoD390EA36A"
+                                    },
+                                    "\"}]"
+                                  ]
+                                ]
+                              }
+                            },
+                            "runOrder": 1,
+                            "roleArn": {
+                              "Fn::GetAtt": [
+                                "pipelineDevAoDBuildBuildDevAodCodePipelineActionRole8A839192",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Deploy",
+                        "actions": [
+                          {
+                            "name": "DeployDevAod",
+                            "inputArtifacts": [
+                              {
+                                "name": "Artifact_Build_BuildDevAod"
+                              }
+                            ],
+                            "actionTypeId": {
+                              "category": "Deploy",
+                              "version": "1",
+                              "owner": "AWS",
+                              "provider": "S3"
+                            },
+                            "configuration": {
+                              "BucketName": {
+                                "Ref": "bucketReactAoD390EA36A"
+                              },
+                              "Extract": "true"
+                            },
+                            "runOrder": 1,
+                            "roleArn": {
+                              "Fn::GetAtt": [
+                                "pipelineDevAoDDeployDeployDevAodCodePipelineActionRoleC524E4C6",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "artifactStore": {
+                      "type": "S3",
+                      "location": {
+                        "Ref": "pipelineDevAoDArtifactsBucket9239F337"
+                      },
+                      "encryptionKey": {
+                        "type": "KMS",
+                        "id": {
+                          "Fn::GetAtt": [
+                            "pipelineDevAoDArtifactsBucketEncryptionKey5CD9DB6C",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "name": "DevAoD",
+                    "restartExecutionOnUpdate": true
+                  }
+                }
+              },
+              "Source": {
+                "id": "Source",
+                "path": "CICDDevStack/pipelineDevAoD/Source",
+                "children": {
+                  "SourceDevAod": {
+                    "id": "SourceDevAod",
+                    "path": "CICDDevStack/pipelineDevAoD/Source/SourceDevAod",
+                    "children": {
+                      "WebhookResource": {
+                        "id": "WebhookResource",
+                        "path": "CICDDevStack/pipelineDevAoD/Source/SourceDevAod/WebhookResource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CodePipeline::Webhook",
+                          "aws:cdk:cloudformation:props": {
+                            "authentication": "GITHUB_HMAC",
+                            "authenticationConfiguration": {
+                              "secretToken": "{{resolve:secretsmanager:GitHubToken:SecretString:GitHubToken::}}"
+                            },
+                            "filters": [
+                              {
+                                "jsonPath": "$.ref",
+                                "matchEquals": "refs/heads/{Branch}"
+                              }
+                            ],
+                            "targetAction": "SourceDevAod",
+                            "targetPipeline": {
+                              "Ref": "pipelineDevAoDF5A8021E"
+                            },
+                            "targetPipelineVersion": 1,
+                            "registerWithThirdParty": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "Build": {
+                "id": "Build",
+                "path": "CICDDevStack/pipelineDevAoD/Build",
+                "children": {
+                  "BuildDevAod": {
+                    "id": "BuildDevAod",
+                    "path": "CICDDevStack/pipelineDevAoD/Build/BuildDevAod",
+                    "children": {
+                      "CodePipelineActionRole": {
+                        "id": "CodePipelineActionRole",
+                        "path": "CICDDevStack/pipelineDevAoD/Build/BuildDevAod/CodePipelineActionRole",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "CICDDevStack/pipelineDevAoD/Build/BuildDevAod/CodePipelineActionRole/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "AWS": {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":iam::",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":root"
+                                            ]
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                }
+                              }
+                            }
+                          },
+                          "DefaultPolicy": {
+                            "id": "DefaultPolicy",
+                            "path": "CICDDevStack/pipelineDevAoD/Build/BuildDevAod/CodePipelineActionRole/DefaultPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "CICDDevStack/pipelineDevAoD/Build/BuildDevAod/CodePipelineActionRole/DefaultPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": [
+                                            "codebuild:BatchGetBuilds",
+                                            "codebuild:StartBuild",
+                                            "codebuild:StopBuild"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "codeBuildDevAoD7086ECB4",
+                                              "Arn"
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "pipelineDevAoDBuildBuildDevAodCodePipelineActionRoleDefaultPolicy11E160E9",
+                                    "roles": [
+                                      {
+                                        "Ref": "pipelineDevAoDBuildBuildDevAodCodePipelineActionRole8A839192"
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "Deploy": {
+                "id": "Deploy",
+                "path": "CICDDevStack/pipelineDevAoD/Deploy",
+                "children": {
+                  "DeployDevAod": {
+                    "id": "DeployDevAod",
+                    "path": "CICDDevStack/pipelineDevAoD/Deploy/DeployDevAod",
+                    "children": {
+                      "CodePipelineActionRole": {
+                        "id": "CodePipelineActionRole",
+                        "path": "CICDDevStack/pipelineDevAoD/Deploy/DeployDevAod/CodePipelineActionRole",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "CICDDevStack/pipelineDevAoD/Deploy/DeployDevAod/CodePipelineActionRole/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "AWS": {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":iam::",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":root"
+                                            ]
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                }
+                              }
+                            }
+                          },
+                          "DefaultPolicy": {
+                            "id": "DefaultPolicy",
+                            "path": "CICDDevStack/pipelineDevAoD/Deploy/DeployDevAod/CodePipelineActionRole/DefaultPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "CICDDevStack/pipelineDevAoD/Deploy/DeployDevAod/CodePipelineActionRole/DefaultPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": [
+                                            "s3:DeleteObject*",
+                                            "s3:PutObject*",
+                                            "s3:Abort*"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "bucketReactAoD390EA36A",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "bucketReactAoD390EA36A",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  "/*"
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "Action": [
+                                            "s3:GetObject*",
+                                            "s3:GetBucket*",
+                                            "s3:List*"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "pipelineDevAoDArtifactsBucket9239F337",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "pipelineDevAoDArtifactsBucket9239F337",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  "/*"
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "Action": [
+                                            "kms:Decrypt",
+                                            "kms:DescribeKey"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "pipelineDevAoDArtifactsBucketEncryptionKey5CD9DB6C",
+                                              "Arn"
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "pipelineDevAoDDeployDeployDevAodCodePipelineActionRoleDefaultPolicyC1C8E961",
+                                    "roles": [
+                                      {
+                                        "Ref": "pipelineDevAoDDeployDeployDevAodCodePipelineActionRoleC524E4C6"
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "codeBuildRole": {
+            "id": "codeBuildRole",
+            "path": "CICDDevStack/codeBuildRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CICDDevStack/codeBuildRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "codebuild.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "description": "Custom Role"
+                  }
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "CICDDevStack/codeBuildRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CICDDevStack/codeBuildRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "*",
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "codeBuildRoleDefaultPolicy54BA5C45",
+                        "roles": [
+                          {
+                            "Ref": "codeBuildRole2DDEF965"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "ImmutableRolecodeBuildRole": {
+            "id": "ImmutableRolecodeBuildRole",
+            "path": "CICDDevStack/ImmutableRolecodeBuildRole"
+          },
+          "codeBuildDevAoD": {
+            "id": "codeBuildDevAoD",
+            "path": "CICDDevStack/codeBuildDevAoD",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CICDDevStack/codeBuildDevAoD/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodeBuild::Project",
+                  "aws:cdk:cloudformation:props": {
+                    "artifacts": {
+                      "type": "CODEPIPELINE"
+                    },
+                    "environment": {
+                      "type": "LINUX_CONTAINER",
+                      "image": "aws/codebuild/amazonlinux2-x86_64-standard:1.0",
+                      "privilegedMode": false,
+                      "computeType": "BUILD_GENERAL1_SMALL"
+                    },
+                    "serviceRole": {
+                      "Fn::GetAtt": [
+                        "codeBuildRole2DDEF965",
+                        "Arn"
+                      ]
+                    },
+                    "source": {
+                      "type": "CODEPIPELINE",
+                      "buildSpec": "./buildspec-dev.yml"
+                    },
+                    "encryptionKey": {
+                      "Fn::GetAtt": [
+                        "pipelineDevAoDArtifactsBucketEncryptionKey5CD9DB6C",
+                        "Arn"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "OAI": {
+            "id": "OAI",
+            "path": "CICDDevStack/OAI",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CICDDevStack/OAI/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+                  "aws:cdk:cloudformation:props": {
+                    "cloudFrontOriginAccessIdentityConfig": {
+                      "comment": "Allows CloudFront to reach the bucket"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "CloudFront": {
+            "id": "CloudFront",
+            "path": "CICDDevStack/CloudFront",
+            "children": {
+              "CFDistribution": {
+                "id": "CFDistribution",
+                "path": "CICDDevStack/CloudFront/CFDistribution",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "defaultRootObject": "index.html",
+                      "httpVersion": "http2",
+                      "priceClass": "PriceClass_100",
+                      "ipv6Enabled": true,
+                      "customErrorResponses": [
+                        {
+                          "errorCode": 404,
+                          "responseCode": 200,
+                          "responsePagePath": "/index.html"
+                        }
+                      ],
+                      "origins": [
+                        {
+                          "id": "origin1",
+                          "domainName": {
+                            "Fn::GetAtt": [
+                              "bucketReactAoD390EA36A",
+                              "RegionalDomainName"
+                            ]
+                          },
+                          "s3OriginConfig": {
+                            "originAccessIdentity": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "origin-access-identity/cloudfront/",
+                                  {
+                                    "Ref": "OAIE1EFC67F"
+                                  }
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "allowedMethods": [
+                          "GET",
+                          "HEAD"
+                        ],
+                        "cachedMethods": [
+                          "GET",
+                          "HEAD"
+                        ],
+                        "compress": true,
+                        "forwardedValues": {
+                          "queryString": false,
+                          "cookies": {
+                            "forward": "none"
+                          }
+                        },
+                        "targetOriginId": "origin1",
+                        "viewerProtocolPolicy": "redirect-to-https"
+                      },
+                      "viewerCertificate": {
+                        "cloudFrontDefaultCertificate": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "OutputId": {
+            "id": "OutputId",
+            "path": "CICDDevStack/OutputId"
+          }
+        }
+      },
+      "CICDProdStack": {
+        "id": "CICDProdStack",
+        "path": "CICDProdStack",
+        "children": {
+          "Parameter": {
+            "id": "Parameter",
+            "path": "CICDProdStack/Parameter",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CICDProdStack/Parameter/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "String",
+                    "value": "183867474463",
+                    "description": "Account Number for Production ENV",
+                    "name": "AmplifyAccountNumberProd"
+                  }
+                }
+              }
+            }
+          },
+          "pipelineMaster": {
+            "id": "pipelineMaster",
+            "path": "CICDProdStack/pipelineMaster",
+            "children": {
+              "ArtifactsBucketEncryptionKey": {
+                "id": "ArtifactsBucketEncryptionKey",
+                "path": "CICDProdStack/pipelineMaster/ArtifactsBucketEncryptionKey",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CICDProdStack/pipelineMaster/ArtifactsBucketEncryptionKey/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                      "aws:cdk:cloudformation:props": {
+                        "keyPolicy": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "kms:Create*",
+                                "kms:Describe*",
+                                "kms:Enable*",
+                                "kms:List*",
+                                "kms:Put*",
+                                "kms:Update*",
+                                "kms:Revoke*",
+                                "kms:Disable*",
+                                "kms:Get*",
+                                "kms:Delete*",
+                                "kms:ScheduleKeyDeletion",
+                                "kms:CancelKeyDeletion",
+                                "kms:GenerateDataKey",
+                                "kms:TagResource",
+                                "kms:UntagResource"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":root"
+                                    ]
+                                  ]
+                                }
+                              },
+                              "Resource": "*"
+                            },
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:DescribeKey",
+                                "kms:Encrypt",
+                                "kms:ReEncrypt*",
+                                "kms:GenerateDataKey*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "pipelineMasterRole0038BD2C",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": "*"
+                            },
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:DescribeKey",
+                                "kms:Encrypt",
+                                "kms:ReEncrypt*",
+                                "kms:GenerateDataKey*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "codeBuildRole2DDEF965",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": "*"
+                            },
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:Encrypt",
+                                "kms:ReEncrypt*",
+                                "kms:GenerateDataKey*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "codeBuildRole2DDEF965",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "ArtifactsBucket": {
+                "id": "ArtifactsBucket",
+                "path": "CICDProdStack/pipelineMaster/ArtifactsBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CICDProdStack/pipelineMaster/ArtifactsBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {
+                        "bucketEncryption": {
+                          "serverSideEncryptionConfiguration": [
+                            {
+                              "serverSideEncryptionByDefault": {
+                                "sseAlgorithm": "aws:kms",
+                                "kmsMasterKeyId": {
+                                  "Fn::GetAtt": [
+                                    "pipelineMasterArtifactsBucketEncryptionKey3CD8EE6F",
+                                    "Arn"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "publicAccessBlockConfiguration": {
+                          "blockPublicAcls": true,
+                          "blockPublicPolicy": true,
+                          "ignorePublicAcls": true,
+                          "restrictPublicBuckets": true
+                        }
+                      }
+                    }
+                  },
+                  "Notifications": {
+                    "id": "Notifications",
+                    "path": "CICDProdStack/pipelineMaster/ArtifactsBucket/Notifications"
+                  }
+                }
+              },
+              "ArtifactsBucketEncryptionKeyAlias": {
+                "id": "ArtifactsBucketEncryptionKeyAlias",
+                "path": "CICDProdStack/pipelineMaster/ArtifactsBucketEncryptionKeyAlias",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CICDProdStack/pipelineMaster/ArtifactsBucketEncryptionKeyAlias/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
+                      "aws:cdk:cloudformation:props": {
+                        "aliasName": "alias/codepipeline-cicdprodstackpipelinemaster1afe96e6",
+                        "targetKeyId": {
+                          "Fn::GetAtt": [
+                            "pipelineMasterArtifactsBucketEncryptionKey3CD8EE6F",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "CICDProdStack/pipelineMaster/Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CICDProdStack/pipelineMaster/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "codepipeline.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "CICDProdStack/pipelineMaster/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CICDProdStack/pipelineMaster/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:GetObject*",
+                                    "s3:GetBucket*",
+                                    "s3:List*",
+                                    "s3:DeleteObject*",
+                                    "s3:PutObject*",
+                                    "s3:Abort*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "pipelineMasterArtifactsBucket0FBB0120",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "pipelineMasterArtifactsBucket0FBB0120",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
+                                    "kms:Decrypt",
+                                    "kms:DescribeKey",
+                                    "kms:Encrypt",
+                                    "kms:ReEncrypt*",
+                                    "kms:GenerateDataKey*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "pipelineMasterArtifactsBucketEncryptionKey3CD8EE6F",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "pipelineMasterApprovalManualApprovalCodePipelineActionRole7A807A32",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "pipelineMasterBuildBuildMasterAodCodePipelineActionRoleDDD176D6",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "pipelineMasterRoleDefaultPolicyE0D21098",
+                            "roles": [
+                              {
+                                "Ref": "pipelineMasterRole0038BD2C"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CICDProdStack/pipelineMaster/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodePipeline::Pipeline",
+                  "aws:cdk:cloudformation:props": {
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "pipelineMasterRole0038BD2C",
+                        "Arn"
+                      ]
+                    },
+                    "stages": [
+                      {
+                        "name": "Source",
+                        "actions": [
+                          {
+                            "name": "SourceMasterAod",
+                            "outputArtifacts": [
+                              {
+                                "name": "Artifact_Source_SourceMasterAod"
+                              }
+                            ],
+                            "actionTypeId": {
+                              "category": "Source",
+                              "version": "1",
+                              "owner": "ThirdParty",
+                              "provider": "GitHub"
+                            },
+                            "configuration": {
+                              "Owner": "shigueojp",
+                              "Repo": "cdk-amplify-react",
+                              "Branch": "master",
+                              "OAuthToken": "{{resolve:secretsmanager:GitHubToken:SecretString:GitHubToken::}}",
+                              "PollForSourceChanges": false
+                            },
+                            "runOrder": 1
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Approval",
+                        "actions": [
+                          {
+                            "name": "Manual-Approval",
+                            "actionTypeId": {
+                              "category": "Approval",
+                              "version": "1",
+                              "owner": "AWS",
+                              "provider": "Manual"
+                            },
+                            "configuration": {
+                              "CustomData": "This deploy is scary, are u sure?!"
+                            },
+                            "runOrder": 1,
+                            "roleArn": {
+                              "Fn::GetAtt": [
+                                "pipelineMasterApprovalManualApprovalCodePipelineActionRole7A807A32",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Build",
+                        "actions": [
+                          {
+                            "name": "BuildMasterAod",
+                            "inputArtifacts": [
+                              {
+                                "name": "Artifact_Source_SourceMasterAod"
+                              }
+                            ],
+                            "outputArtifacts": [
+                              {
+                                "name": "Artifact_Build_BuildMasterAod"
+                              }
+                            ],
+                            "actionTypeId": {
+                              "category": "Build",
+                              "version": "1",
+                              "owner": "AWS",
+                              "provider": "CodeBuild"
+                            },
+                            "configuration": {
+                              "ProjectName": {
+                                "Ref": "CodeBuildMaster37398783"
+                              },
+                              "EnvironmentVariables": "[{\"name\":\"AmplifyEnvProd\",\"type\":\"PLAINTEXT\",\"value\":\"prod\"}]"
+                            },
+                            "runOrder": 1,
+                            "roleArn": {
+                              "Fn::GetAtt": [
+                                "pipelineMasterBuildBuildMasterAodCodePipelineActionRoleDDD176D6",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "artifactStore": {
+                      "type": "S3",
+                      "location": {
+                        "Ref": "pipelineMasterArtifactsBucket0FBB0120"
+                      },
+                      "encryptionKey": {
+                        "type": "KMS",
+                        "id": {
+                          "Fn::GetAtt": [
+                            "pipelineMasterArtifactsBucketEncryptionKey3CD8EE6F",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "name": "MasterAoD",
+                    "restartExecutionOnUpdate": true
+                  }
+                }
+              },
+              "Source": {
+                "id": "Source",
+                "path": "CICDProdStack/pipelineMaster/Source",
+                "children": {
+                  "SourceMasterAod": {
+                    "id": "SourceMasterAod",
+                    "path": "CICDProdStack/pipelineMaster/Source/SourceMasterAod",
+                    "children": {
+                      "WebhookResource": {
+                        "id": "WebhookResource",
+                        "path": "CICDProdStack/pipelineMaster/Source/SourceMasterAod/WebhookResource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CodePipeline::Webhook",
+                          "aws:cdk:cloudformation:props": {
+                            "authentication": "GITHUB_HMAC",
+                            "authenticationConfiguration": {
+                              "secretToken": "{{resolve:secretsmanager:GitHubToken:SecretString:GitHubToken::}}"
+                            },
+                            "filters": [
+                              {
+                                "jsonPath": "$.ref",
+                                "matchEquals": "refs/heads/{Branch}"
+                              }
+                            ],
+                            "targetAction": "SourceMasterAod",
+                            "targetPipeline": {
+                              "Ref": "pipelineMasterE8993238"
+                            },
+                            "targetPipelineVersion": 1,
+                            "registerWithThirdParty": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "Approval": {
+                "id": "Approval",
+                "path": "CICDProdStack/pipelineMaster/Approval",
+                "children": {
+                  "Manual-Approval": {
+                    "id": "Manual-Approval",
+                    "path": "CICDProdStack/pipelineMaster/Approval/Manual-Approval",
+                    "children": {
+                      "CodePipelineActionRole": {
+                        "id": "CodePipelineActionRole",
+                        "path": "CICDProdStack/pipelineMaster/Approval/Manual-Approval/CodePipelineActionRole",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "CICDProdStack/pipelineMaster/Approval/Manual-Approval/CodePipelineActionRole/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "AWS": {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":iam::",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":root"
+                                            ]
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "Build": {
+                "id": "Build",
+                "path": "CICDProdStack/pipelineMaster/Build",
+                "children": {
+                  "BuildMasterAod": {
+                    "id": "BuildMasterAod",
+                    "path": "CICDProdStack/pipelineMaster/Build/BuildMasterAod",
+                    "children": {
+                      "CodePipelineActionRole": {
+                        "id": "CodePipelineActionRole",
+                        "path": "CICDProdStack/pipelineMaster/Build/BuildMasterAod/CodePipelineActionRole",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "CICDProdStack/pipelineMaster/Build/BuildMasterAod/CodePipelineActionRole/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "AWS": {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":iam::",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":root"
+                                            ]
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                }
+                              }
+                            }
+                          },
+                          "DefaultPolicy": {
+                            "id": "DefaultPolicy",
+                            "path": "CICDProdStack/pipelineMaster/Build/BuildMasterAod/CodePipelineActionRole/DefaultPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "CICDProdStack/pipelineMaster/Build/BuildMasterAod/CodePipelineActionRole/DefaultPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": [
+                                            "codebuild:BatchGetBuilds",
+                                            "codebuild:StartBuild",
+                                            "codebuild:StopBuild"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "CodeBuildMaster37398783",
+                                              "Arn"
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "pipelineMasterBuildBuildMasterAodCodePipelineActionRoleDefaultPolicy29062780",
+                                    "roles": [
+                                      {
+                                        "Ref": "pipelineMasterBuildBuildMasterAodCodePipelineActionRoleDDD176D6"
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "codeBuildRole": {
+            "id": "codeBuildRole",
+            "path": "CICDProdStack/codeBuildRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CICDProdStack/codeBuildRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "codebuild.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "description": "Role for CodeBuild have the right permissions"
+                  }
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "CICDProdStack/codeBuildRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CICDProdStack/codeBuildRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "*",
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "codeBuildRoleDefaultPolicy54BA5C45",
+                        "roles": [
+                          {
+                            "Ref": "codeBuildRole2DDEF965"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "ImmutableRolecodeBuildRole": {
+            "id": "ImmutableRolecodeBuildRole",
+            "path": "CICDProdStack/ImmutableRolecodeBuildRole"
+          },
+          "CodeBuildMaster": {
+            "id": "CodeBuildMaster",
+            "path": "CICDProdStack/CodeBuildMaster",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CICDProdStack/CodeBuildMaster/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodeBuild::Project",
+                  "aws:cdk:cloudformation:props": {
+                    "artifacts": {
+                      "type": "CODEPIPELINE"
+                    },
+                    "environment": {
+                      "type": "LINUX_CONTAINER",
+                      "image": "aws/codebuild/amazonlinux2-x86_64-standard:1.0",
+                      "privilegedMode": false,
+                      "computeType": "BUILD_GENERAL1_SMALL"
+                    },
+                    "serviceRole": {
+                      "Fn::GetAtt": [
+                        "codeBuildRole2DDEF965",
+                        "Arn"
+                      ]
+                    },
+                    "source": {
+                      "type": "CODEPIPELINE",
+                      "buildSpec": "./buildspec-prod.yml"
+                    },
+                    "encryptionKey": {
+                      "Fn::GetAtt": [
+                        "pipelineMasterArtifactsBucketEncryptionKey3CD8EE6F",
+                        "Arn"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,243 @@
+{
+  "Resources": {
+    "CrossAccRole314E9A72": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::727044573396:root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Description": "Role for codebuild from Dev Account have the right permissions",
+        "RoleName": "CrossAccountRole"
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProdAccStack/CrossAccRole/Resource"
+      }
+    },
+    "CrossAccRoleDefaultPolicy8E65B069": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "*",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "CrossAccRoleDefaultPolicy8E65B069",
+        "Roles": [
+          {
+            "Ref": "CrossAccRole314E9A72"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProdAccStack/CrossAccRole/DefaultPolicy/Resource"
+      }
+    },
+    "bucketHostingCD2AAEE9": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "WebsiteConfiguration": {
+          "ErrorDocument": "index.html",
+          "IndexDocument": "index.html"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "ProdAccStack/bucketHosting/Resource"
+      }
+    },
+    "bucketHostingPolicyE6587113": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "bucketHostingCD2AAEE9"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "CanonicalUser": {
+                  "Fn::GetAtt": [
+                    "OAIE1EFC67F",
+                    "S3CanonicalUserId"
+                  ]
+                }
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "bucketHostingCD2AAEE9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "bucketHostingCD2AAEE9",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProdAccStack/bucketHosting/Policy/Resource"
+      }
+    },
+    "OAIE1EFC67F": {
+      "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+      "Properties": {
+        "CloudFrontOriginAccessIdentityConfig": {
+          "Comment": "Allows CloudFront to reach the bucket"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProdAccStack/OAI/Resource"
+      }
+    },
+    "Parameter9E1B4FBA": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "bucketHostingCD2AAEE9"
+              }
+            ]
+          ]
+        },
+        "Description": "Description for your parameter",
+        "Name": "bucketNameProd"
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProdAccStack/Parameter/Resource"
+      }
+    },
+    "CloudFrontCFDistribution57EFBAC6": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "CustomErrorResponses": [
+            {
+              "ErrorCode": 404,
+              "ResponseCode": 200,
+              "ResponsePagePath": "/index.html"
+            }
+          ],
+          "DefaultCacheBehavior": {
+            "AllowedMethods": [
+              "GET",
+              "HEAD"
+            ],
+            "CachedMethods": [
+              "GET",
+              "HEAD"
+            ],
+            "Compress": true,
+            "ForwardedValues": {
+              "Cookies": {
+                "Forward": "none"
+              },
+              "QueryString": false
+            },
+            "TargetOriginId": "origin1",
+            "ViewerProtocolPolicy": "redirect-to-https"
+          },
+          "DefaultRootObject": "index.html",
+          "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "bucketHostingCD2AAEE9",
+                  "RegionalDomainName"
+                ]
+              },
+              "Id": "origin1",
+              "S3OriginConfig": {
+                "OriginAccessIdentity": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "origin-access-identity/cloudfront/",
+                      {
+                        "Ref": "OAIE1EFC67F"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "PriceClass": "PriceClass_100",
+          "ViewerCertificate": {
+            "CloudFrontDefaultCertificate": true
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProdAccStack/CloudFront/CFDistribution"
+      }
+    }
+  },
+  "Outputs": {
+    "OutputId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "CloudFrontCFDistribution57EFBAC6",
+          "DomainName"
+        ]
+      },
+      "Export": {
+        "Name": "OutputExportName"
+      }
+    }
+  }
+}

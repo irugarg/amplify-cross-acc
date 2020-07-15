@@ -1,0 +1,612 @@
+{
+  "Resources": {
+    "Parameter9E1B4FBA": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": "183867474463",
+        "Description": "Account Number for Production ENV",
+        "Name": "AmplifyAccountNumberProd"
+      },
+      "Metadata": {
+        "aws:cdk:path": "CICDProdStack/Parameter/Resource"
+      }
+    },
+    "pipelineMasterArtifactsBucketEncryptionKey3CD8EE6F": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey",
+                "kms:TagResource",
+                "kms:UntagResource"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "pipelineMasterRole0038BD2C",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "codeBuildRole2DDEF965",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "codeBuildRole2DDEF965",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "CICDProdStack/pipelineMaster/ArtifactsBucketEncryptionKey/Resource"
+      }
+    },
+    "pipelineMasterArtifactsBucket0FBB0120": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "KMSMasterKeyID": {
+                  "Fn::GetAtt": [
+                    "pipelineMasterArtifactsBucketEncryptionKey3CD8EE6F",
+                    "Arn"
+                  ]
+                },
+                "SSEAlgorithm": "aws:kms"
+              }
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "CICDProdStack/pipelineMaster/ArtifactsBucket/Resource"
+      }
+    },
+    "pipelineMasterArtifactsBucketEncryptionKeyAliasAE3E319C": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-cicdprodstackpipelinemaster1afe96e6",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "pipelineMasterArtifactsBucketEncryptionKey3CD8EE6F",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "CICDProdStack/pipelineMaster/ArtifactsBucketEncryptionKeyAlias/Resource"
+      }
+    },
+    "pipelineMasterRole0038BD2C": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codepipeline.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "CICDProdStack/pipelineMaster/Role/Resource"
+      }
+    },
+    "pipelineMasterRoleDefaultPolicyE0D21098": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "pipelineMasterArtifactsBucket0FBB0120",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "pipelineMasterArtifactsBucket0FBB0120",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "pipelineMasterArtifactsBucketEncryptionKey3CD8EE6F",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "pipelineMasterApprovalManualApprovalCodePipelineActionRole7A807A32",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "pipelineMasterBuildBuildMasterAodCodePipelineActionRoleDDD176D6",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "pipelineMasterRoleDefaultPolicyE0D21098",
+        "Roles": [
+          {
+            "Ref": "pipelineMasterRole0038BD2C"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "CICDProdStack/pipelineMaster/Role/DefaultPolicy/Resource"
+      }
+    },
+    "pipelineMasterE8993238": {
+      "Type": "AWS::CodePipeline::Pipeline",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "pipelineMasterRole0038BD2C",
+            "Arn"
+          ]
+        },
+        "Stages": [
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Source",
+                  "Owner": "ThirdParty",
+                  "Provider": "GitHub",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "Owner": "shigueojp",
+                  "Repo": "cdk-amplify-react",
+                  "Branch": "master",
+                  "OAuthToken": "{{resolve:secretsmanager:GitHubToken:SecretString:GitHubToken::}}",
+                  "PollForSourceChanges": false
+                },
+                "Name": "SourceMasterAod",
+                "OutputArtifacts": [
+                  {
+                    "Name": "Artifact_Source_SourceMasterAod"
+                  }
+                ],
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Source"
+          },
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Approval",
+                  "Owner": "AWS",
+                  "Provider": "Manual",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "CustomData": "This deploy is scary, are u sure?!"
+                },
+                "Name": "Manual-Approval",
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "pipelineMasterApprovalManualApprovalCodePipelineActionRole7A807A32",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Approval"
+          },
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Build",
+                  "Owner": "AWS",
+                  "Provider": "CodeBuild",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "ProjectName": {
+                    "Ref": "CodeBuildMaster37398783"
+                  },
+                  "EnvironmentVariables": "[{\"name\":\"AmplifyEnvProd\",\"type\":\"PLAINTEXT\",\"value\":\"prod\"}]"
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "Artifact_Source_SourceMasterAod"
+                  }
+                ],
+                "Name": "BuildMasterAod",
+                "OutputArtifacts": [
+                  {
+                    "Name": "Artifact_Build_BuildMasterAod"
+                  }
+                ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "pipelineMasterBuildBuildMasterAodCodePipelineActionRoleDDD176D6",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Build"
+          }
+        ],
+        "ArtifactStore": {
+          "EncryptionKey": {
+            "Id": {
+              "Fn::GetAtt": [
+                "pipelineMasterArtifactsBucketEncryptionKey3CD8EE6F",
+                "Arn"
+              ]
+            },
+            "Type": "KMS"
+          },
+          "Location": {
+            "Ref": "pipelineMasterArtifactsBucket0FBB0120"
+          },
+          "Type": "S3"
+        },
+        "Name": "MasterAoD",
+        "RestartExecutionOnUpdate": true
+      },
+      "DependsOn": [
+        "pipelineMasterRoleDefaultPolicyE0D21098",
+        "pipelineMasterRole0038BD2C"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "CICDProdStack/pipelineMaster/Resource"
+      }
+    },
+    "pipelineMasterSourceSourceMasterAodWebhookResource6D530E3F": {
+      "Type": "AWS::CodePipeline::Webhook",
+      "Properties": {
+        "Authentication": "GITHUB_HMAC",
+        "AuthenticationConfiguration": {
+          "SecretToken": "{{resolve:secretsmanager:GitHubToken:SecretString:GitHubToken::}}"
+        },
+        "Filters": [
+          {
+            "JsonPath": "$.ref",
+            "MatchEquals": "refs/heads/{Branch}"
+          }
+        ],
+        "TargetAction": "SourceMasterAod",
+        "TargetPipeline": {
+          "Ref": "pipelineMasterE8993238"
+        },
+        "TargetPipelineVersion": 1,
+        "RegisterWithThirdParty": true
+      },
+      "Metadata": {
+        "aws:cdk:path": "CICDProdStack/pipelineMaster/Source/SourceMasterAod/WebhookResource"
+      }
+    },
+    "pipelineMasterApprovalManualApprovalCodePipelineActionRole7A807A32": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "CICDProdStack/pipelineMaster/Approval/Manual-Approval/CodePipelineActionRole/Resource"
+      }
+    },
+    "pipelineMasterBuildBuildMasterAodCodePipelineActionRoleDDD176D6": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "CICDProdStack/pipelineMaster/Build/BuildMasterAod/CodePipelineActionRole/Resource"
+      }
+    },
+    "pipelineMasterBuildBuildMasterAodCodePipelineActionRoleDefaultPolicy29062780": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "codebuild:BatchGetBuilds",
+                "codebuild:StartBuild",
+                "codebuild:StopBuild"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "CodeBuildMaster37398783",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "pipelineMasterBuildBuildMasterAodCodePipelineActionRoleDefaultPolicy29062780",
+        "Roles": [
+          {
+            "Ref": "pipelineMasterBuildBuildMasterAodCodePipelineActionRoleDDD176D6"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "CICDProdStack/pipelineMaster/Build/BuildMasterAod/CodePipelineActionRole/DefaultPolicy/Resource"
+      }
+    },
+    "codeBuildRole2DDEF965": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codebuild.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Description": "Role for CodeBuild have the right permissions"
+      },
+      "Metadata": {
+        "aws:cdk:path": "CICDProdStack/codeBuildRole/Resource"
+      }
+    },
+    "codeBuildRoleDefaultPolicy54BA5C45": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "*",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "codeBuildRoleDefaultPolicy54BA5C45",
+        "Roles": [
+          {
+            "Ref": "codeBuildRole2DDEF965"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "CICDProdStack/codeBuildRole/DefaultPolicy/Resource"
+      }
+    },
+    "CodeBuildMaster37398783": {
+      "Type": "AWS::CodeBuild::Project",
+      "Properties": {
+        "Artifacts": {
+          "Type": "CODEPIPELINE"
+        },
+        "Environment": {
+          "ComputeType": "BUILD_GENERAL1_SMALL",
+          "Image": "aws/codebuild/amazonlinux2-x86_64-standard:1.0",
+          "PrivilegedMode": false,
+          "Type": "LINUX_CONTAINER"
+        },
+        "ServiceRole": {
+          "Fn::GetAtt": [
+            "codeBuildRole2DDEF965",
+            "Arn"
+          ]
+        },
+        "Source": {
+          "BuildSpec": "./buildspec-prod.yml",
+          "Type": "CODEPIPELINE"
+        },
+        "EncryptionKey": {
+          "Fn::GetAtt": [
+            "pipelineMasterArtifactsBucketEncryptionKey3CD8EE6F",
+            "Arn"
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "CICDProdStack/CodeBuildMaster/Resource"
+      }
+    }
+  }
+}

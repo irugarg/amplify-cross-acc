@@ -1,0 +1,37 @@
+type S3Object {
+  bucket: String!
+  region: String!
+  key: String!
+}
+
+# Owner is anyone logged using cognito
+# Update and delete can be modified just by the one who created
+type User
+  @model
+  @auth(rules: [
+      {allow: owner, ownerField:"owner", provider: userPools},
+      {allow: private, provider: userPools, operations:[read]}
+    ])
+{
+  id: ID!
+  name: String
+  email: String!
+  profilePhoto: S3Object
+  owner: String
+}
+
+type Post
+  @model(subscriptions: { level: public })
+  @auth(rules: [
+      {allow: owner, ownerField:"owner", provider: userPools}
+      {allow: private, provider: userPools, operations:[read]}
+    ])
+  @key(name: "SortByTimestamp", fields:["type", "timestamp"], queryField: "listPostsSortedByTimestamp")
+  @key(name: "SortByOwner", fields:["owner", "timestamp"], queryField: "listPostsBySpecificOwner")
+{
+  type: String!
+  id: ID!
+  content: String!
+  owner: String
+  timestamp: AWSTimestamp!
+}
