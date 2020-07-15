@@ -11,8 +11,6 @@ phases:
     commands:
       - npm install
       - npm install -g @aws-amplify/cli
-      # - npm install -g pm2
-      # - npm install -g wait-on
   build:
     commands:
       - echo Build started...
@@ -22,21 +20,13 @@ phases:
       - sh ./amplifyPush.sh -e dev
       - npm run build
       - npm run test:ci
-      # - pm2 start npm -- start
-      # - wait-on http://localhost:3000
-      # - node_modules/.bin/cypress run
       - echo Build finished on `date`
-
 #Testing feature
 reports:
   UnitTestReport: # CodeBuild will create a report group called "TestReport".
     files: #Store all of the files
       - "junit.xml"
     base-directory: "./"
-  # TestReport: # CodeBuild will create a report group called "TestReport".
-  #   files: #Store all of the files
-  #     - "**/*"
-  #   base-directory: "results"
 artifacts:
   files:
     - "**/*"

@@ -2,7 +2,8 @@ version: 0.2
 
 env:
   parameter-store:
-    AMPLIFY_ACCOUNT_NUMBER_PROD: "AmplifyAccountNumberProd"
+    ACCESS_KEY: "access-key-amplify-prod"
+    SECRET_KEY: "secret-key-amplify-prod"
 phases:
   install:
     runtime-versions:
@@ -10,41 +11,22 @@ phases:
     commands:
       - npm install
       - npm install -g @aws-amplify/cli
-      # - npm install -g pm2
-      # - npm install -g wait-on
   build:
     commands:
       - echo Build started...
-      - assumes_role=`aws sts assume-role --role-arn "arn:aws:iam::$AMPLIFY_ACCOUNT_NUMBER_PROD:role/CrossAccountRole" --role-session-name int`
-      - AWS_ACCESS_KEY_ID=`echo $assumes_role | jq -r .Credentials.AccessKeyId`
-      - AWS_SECRET_ACCESS_KEY=`echo $assumes_role | jq -r .Credentials.SecretAccessKey`
-      - AWS_SESSION_TOKEN=`echo $assumes_role | jq -r .Credentials.SessionToken`
-      - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-      - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+      - aws configure set aws_access_key_id $ACCESS_KEY
+      - aws configure set aws_secret_access_key $SECRET_KEY
       - aws configure set default.region $AWS_REGION
-      - aws configure set aws_session_token $AWS_SESSION_TOKEN
-      - sh ./amplifyPush.sh -e $AmplifyEnvProd
+      - sh ./amplifyPush.sh -e prod
       - npm run build
       - npm run test:ci
-      # - pm2 start npm -- start
-      # - wait-on http://localhost:3000
-      # - node_modules/.bin/cypress run
       - echo Build finished on `date`
-  post_build:
-    commands:
-      - BUCKET_NAME=`aws ssm get-parameter --name "bucketNameProd" --query 'Parameter.Value' --output text`
-      - echo $BUCKET_NAME
-      - aws s3 sync ./build $BUCKET_NAME
 #Testing feature
 reports:
   UnitTestReport: # CodeBuild will create a report group called "TestReport".
     files: #Store all of the files
       - "junit.xml"
     base-directory: "./"
-  # TestReport: # CodeBuild will create a report group called "TestReport".
-  #   files: #Store all of the files
-  #     - "**/*"
-  #   base-directory: "results"
 artifacts:
   files:
     - "**/*"

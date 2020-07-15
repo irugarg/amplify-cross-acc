@@ -160,6 +160,12 @@ When done, verify if exists a file in **/amplify/team-provider.info.json**.
 
    ![SSMPutParamater](img/ssm_put_parameter.png)
 
+3. Do the same as step 2 for prod environment.
+   ```
+   aws ssm put-parameter --name "access-key-amplify-prod" --type "SecureString" --value <YourAccessKey> --profile amplify-for-prod
+   aws ssm put-parameter --name "secret-key-amplify-prod" --type "SecureString" --value <YourSecretKey> --profile amplify-for-prod
+   ```
+
 **Deploying with CDK**
 
 1. Run `npm install` inside cdk folder.
@@ -172,10 +178,8 @@ When the CDK deploy finish, it`s going to trigger the pipeline and in a few minu
 
 For CI/CD Production environment cdk folder:
   2. Run `cdk deploy ProdAccStack --profile amplify-for-prod`
-  3. Run `cdk deploy CICDProdStack --profile amplify-for-dev-test`
 
-
-when the CDK deploy finish, it`s going to trigger the pipeline, for production deployment, it is necessary to accept the manual approval in CodePipeline in order to continue.
+When the CDK deploy finish, it`s going to trigger the pipeline, for production deployment, it is necessary to accept the manual approval in CodePipeline in order to continue.
 
 ## Testing CI/CD
 
@@ -207,9 +211,8 @@ git push
 ### Clean your resources
 >The S3 buckets should be deleted manually.
 
-1. Run `cdk destroy ProdAccStack --profile amplify-for-prod`
 2. Run `cdk destroy CICDDevStack --profile amplify-for-dev-test`
-3. Run `cdk destroy CICDProdStack --profile amplify-for-dev-test`
+3. Run `cdk destroy CICDProdStack --profile amplify-for-prod`
 
 ### Issues
 
