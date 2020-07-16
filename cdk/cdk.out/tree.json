@@ -445,7 +445,7 @@
                               "provider": "GitHub"
                             },
                             "configuration": {
-                              "Owner": "shigueojp",
+                              "Owner": "irugarg",
                               "Repo": "amplify-cross-acc",
                               "Branch": "dev",
                               "OAuthToken": "{{resolve:secretsmanager:GitHubToken:SecretString:GitHubToken::}}",
@@ -1491,7 +1491,7 @@
                               "provider": "GitHub"
                             },
                             "configuration": {
-                              "Owner": "shigueojp",
+                              "Owner": "irugarg",
                               "Repo": "amplify-cross-acc",
                               "Branch": "master",
                               "OAuthToken": "{{resolve:secretsmanager:GitHubToken:SecretString:GitHubToken::}}",

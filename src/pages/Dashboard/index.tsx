@@ -122,10 +122,10 @@ const Dashboard: React.FC = () => {
               userData: await getDataChimeFromUser(
                 payload.value.data.onCreatePost?.owner as string,
               ),
-              // timeFormatted: calcDistanceToNow(
-              //   payload.value.data.onCreatePost.timestamp as number,
-              // ),
-              timeFormatted: payload.value.data.onCreatePost.timestamp,
+              timeFormatted: calcDistanceToNow(
+                payload.value.data.onCreatePost.timestamp as number,
+              ),
+              //timeFormatted: payload.value.data.onCreatePost.timestamp,
             };
             setChimes((prevState) => [chime, ...prevState]);
           } catch (e) {

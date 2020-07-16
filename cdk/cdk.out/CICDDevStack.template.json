@@ -370,7 +370,7 @@
                   "Version": "1"
                 },
                 "Configuration": {
-                  "Owner": "shigueojp",
+                  "Owner": "irugarg",
                   "Repo": "amplify-cross-acc",
                   "Branch": "dev",
                   "OAuthToken": "{{resolve:secretsmanager:GitHubToken:SecretString:GitHubToken::}}",
